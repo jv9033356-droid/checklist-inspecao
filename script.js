@@ -133,83 +133,156 @@ function renderCategories() {
         grid.appendChild(card);
     });
 
-    renderBotaoExcel(grid);
+    renderBotaoExcel(grid); // Mantém apenas o Excel aqui
     lucide.createIcons();
 }
 
 function renderBotaoExcel(grid) {
     const cardExcel = document.createElement('div');
-    cardExcel.className = "bg-emerald-500/10 border border-emerald-500/40 p-4 rounded-2xl flex items-center gap-4 cursor-pointer mt-6 active:scale-95 transition-all";
+    // Mudei para inline-flex e defini uma largura máxima (w-48)
+    cardExcel.className = "bg-emerald-500/10 border border-emerald-500/40 p-2 rounded-xl flex items-center gap-3 cursor-pointer mt-4 active:scale-95 transition-all w-fit px-4 mx-auto";
     cardExcel.innerHTML = `
-        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-900">
-            <i data-lucide="file-spreadsheet"></i>
+        <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-slate-900">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
         </div>
-        <div class="flex-1">
-            <h3 class="font-bold text-emerald-400">6. Exportar Excel</h3>
-            <p class="text-xs text-emerald-500/60">Finalizar e baixar relatório</p>
-        </div>
+        <span class="font-bold text-emerald-400 text-xs">Planilha Excel</span>
     `;
     cardExcel.onclick = generateExcel;
     grid.appendChild(cardExcel);
 }
 
+function renderBotaoPDF(grid) {
+    const cardPDF = document.createElement('div');
+    // Mesma lógica: w-fit (largura do conteúdo) e px-4 (espaçamento lateral)
+    cardPDF.className = "bg-red-500/10 border border-red-500/40 p-2 rounded-xl flex items-center gap-3 cursor-pointer mt-2 active:scale-95 transition-all w-fit px-4 mx-auto";
+    cardPDF.innerHTML = `
+        <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center text-white">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+        </div>
+        <span class="font-bold text-red-400 text-xs">Exportar PDF</span>
+    `;
+    cardPDF.onclick = gerarPDF;
+    grid.appendChild(cardPDF);
+}
+
 function openItems(cat) {
-    if (nivelAtual !== 'itens-manutencao') nivelAtual = 'menu';
+    // Define se volta para o menu ou para o submenu de manutenção
+    if (nivelAtual !== 'submenu') nivelAtual = 'menu';
+    
     showScreen('items'); 
     document.getElementById('titulo-categoria').innerText = cat.name;
     
     const lista = document.getElementById('lista-itens');
     lista.innerHTML = ''; 
 
+    // 1. GERADOR DE CAMPOS (O coração do formulário)
     cat.items.forEach(pergunta => {
         const div = document.createElement('div');
-        div.className = "bg-[#1e293b] p-4 rounded-xl border border-[#334155] mb-4";
+        div.className = "bg-[#1e293b] p-4 rounded-xl border border-[#334155] mb-4 shadow-sm";
         
         let conteudoInput = "";
 
-        if (pergunta.id.includes('valor')) {
+        // REGRA PARA FOTOS
+        if (pergunta.type === 'file' || pergunta.label.toLowerCase().includes('foto')) {
             conteudoInput = `
-                <input type="text" inputmode="decimal" id="input-${pergunta.id}" placeholder="R$ 0,00" 
-                       class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
-                       value="${respostas[pergunta.id] || ''}"
-                       oninput="formatarMoeda(this, '${pergunta.id}')">`;
-        }
-        else if (pergunta.type === 'number' || pergunta.type === 'text') {
-            const modoTeclado = pergunta.type === 'number' ? 'decimal' : 'text';
-            conteudoInput = `
-                <input type="text" inputmode="${modoTeclado}" id="input-${pergunta.id}" placeholder="Digite aqui..." 
-                       class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500" 
-                       value="${respostas[pergunta.id] || ''}"
-                       oninput="respostas['${pergunta.id}'] = this.value">`;
-        }
-        else if (pergunta.type === 'select_status') {
-            conteudoInput = `
-                <select class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
-                        onchange="respostas['${pergunta.id}'] = this.value">
-                    <option value="">Selecione...</option>
-                    <option value="OK" ${respostas[pergunta.id] === 'OK' ? 'selected' : ''}>✅ OK / Normal</option>
-                    <option value="Baixo" ${respostas[pergunta.id] === 'Baixo' ? 'selected' : ''}>⚠️ Baixo / Repor</option>
-                    <option value="Crítico" ${respostas[pergunta.id] === 'Crítico' ? 'selected' : ''}>🚨 Crítico</option>
-                </select>`;
-        }
-        else if (pergunta.type === 'file') {
-            conteudoInput = `
-                <label class="flex flex-col items-center justify-center gap-2 w-full py-4 bg-[#0f172a] border border-dashed border-[#475569] rounded-lg cursor-pointer active:bg-amber-500/10 transition-all">
-                    <i data-lucide="camera" class="text-amber-500"></i>
-                    <span class="text-xs text-slate-400">Capturar Registro Fotográfico</span>
-                    <input type="file" accept="image/*" capture="environment" class="hidden" 
-                           onchange="mostraPreviewDaFoto(this, '${pergunta.id}')">
-                </label>
+                <div class="flex items-center justify-center w-full mt-2">
+                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#334155] rounded-xl cursor-pointer hover:bg-[#2d3a4f] transition-all bg-[#0f172a]/50">
+                        <i data-lucide="camera" class="w-8 h-8 text-orange-400 mb-2"></i>
+                        <span class="text-xs text-slate-400 font-medium text-center px-2">Capturar Registro Fotográfico</span>
+                        <input type="file" class="hidden" accept="image/*" capture="environment" onchange="mostraPreviewDaFoto(this, '${pergunta.id}')">
+                    </label>
+                </div>
                 <div id="visualizacao-${pergunta.id}" class="mt-3 ${respostas[pergunta.id] ? '' : 'hidden'} p-2 bg-[#0f172a] rounded-lg border border-[#334155]">
                     <img src="${respostas[pergunta.id] || ''}" class="w-full h-auto max-h-60 object-cover rounded-md border-2 border-emerald-500">
                 </div>`;
+        } 
+        // REGRA PARA SELECT (GERADOR: NÍVEL/BOIA) COM SETINHA E BORDA LARANJA
+        else if (pergunta.type === 'select_status' || pergunta.label.toLowerCase().includes('nível') || pergunta.label.toLowerCase().includes('boia')) {
+            conteudoInput = `
+                <div class="relative mt-2">
+                    <select onchange="respostas['${pergunta.id}'] = this.value" class="w-full bg-[#0f172a] border-2 border-[#f59e0b] rounded-xl p-4 text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#f59e0b] appearance-none pr-10 cursor-pointer text-sm font-medium transition-all">
+                        <option value="">Selecione...</option>
+                        <option value="OK" ${respostas[pergunta.id] === 'OK' ? 'selected' : ''}>✅ OK / Normal</option>
+                        <option value="Baixo" ${respostas[pergunta.id] === 'Baixo' ? 'selected' : ''}>⚠️ Baixo / Repor</option>
+                        <option value="Crítico" ${respostas[pergunta.id] === 'Crítico' ? 'selected' : ''}>🚨 Crítico</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-[#f59e0b]">
+                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                    </div>
+                </div>`;
         }
-
-        div.innerHTML = `<p class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">${pergunta.label}</p>${conteudoInput}`;
+        // REGRA PARA STATUS DE MANUTENÇÃO (BOTÕES OK, MÉDIO, CRÍTICO)
+        else if (pergunta.type === 'status') {
+            conteudoInput = `
+                <div class="grid grid-cols-3 gap-2 mt-2">
+                    <button onclick="respostas['${pergunta.id}'] = 'OK'" class="py-3 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 text-[10px] font-bold uppercase">OK</button>
+                    <button onclick="respostas['${pergunta.id}'] = 'Médio'" class="py-3 rounded-lg bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 text-[10px] font-bold uppercase">Médio</button>
+                    <button onclick="respostas['${pergunta.id}'] = 'Crítico'" class="py-3 rounded-lg bg-red-500/10 text-red-500 border border-red-500/30 text-[10px] font-bold uppercase">Crítico</button>
+                </div>`;
+        }
+        // INPUTS NORMAIS (ÁGUA, LUZ, DIESEL)
+        else {
+            conteudoInput = `
+                <input type="${pergunta.type || 'text'}" 
+                    value="${respostas[pergunta.id] || ''}"
+                    oninput="respostas['${pergunta.id}'] = this.value"
+                    placeholder="Toque para digitar..." 
+                    class="w-full bg-[#0f172a] border border-[#334155] rounded-xl p-4 text-slate-100 focus:outline-none focus:border-blue-500 mt-2 font-medium">`;
+        }
+        
+        div.innerHTML = `
+            <p class="text-[11px] font-black text-slate-400 mb-1 uppercase tracking-widest flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                ${pergunta.label}
+            </p>
+            ${conteudoInput}`;
         lista.appendChild(div);
     });
+
+    // 2. RODAPÉ COM OS 3 BOTÕES (VOLTAR, SALVAR, PDF)
+    const footer = document.createElement('div');
+    footer.className = "flex gap-3 mt-8 sticky bottom-0 bg-[#0f172a]/95 py-4 border-t border-[#334155] z-50 justify-center backdrop-blur-sm";
+    footer.innerHTML = `
+        <button id="btn-voltar-footer" class="flex items-center justify-center w-14 h-14 bg-transparent border-2 border-[#f59e0b] text-[#f59e0b] rounded-2xl active:scale-90 transition-all">
+            <i data-lucide="arrow-left" class="w-7 h-7"></i>
+        </button>
+        <button id="btn-salvar-footer" class="flex-1 flex items-center justify-center h-14 bg-emerald-500 text-slate-900 rounded-2xl active:scale-95 transition-all shadow-lg shadow-emerald-500/20">
+            <i data-lucide="save" class="w-7 h-7"></i>
+        </button>
+        <button id="btn-pdf-footer" class="flex-1 flex items-center justify-center h-14 bg-red-500 text-white rounded-2xl active:scale-95 transition-all shadow-lg shadow-red-500/20">
+            <i data-lucide="file-text" class="w-7 h-7"></i>
+        </button>
+    `;
+    lista.appendChild(footer);
     lucide.createIcons();
-}
+
+    // 3. LÓGICA DOS BOTÕES
+    document.getElementById('btn-voltar-footer').onclick = () => {
+        if (nivelAtual === 'submenu') {
+            const catManut = CATEGORIAS.find(c => c.id === 'manutencao');
+            openSubmenu(catManut);
+        } else {
+            showScreen('categories');
+            renderCategories();
+        }
+    };
+
+    document.getElementById('btn-salvar-footer').onclick = function() {
+        const originalContent = this.innerHTML;
+        this.innerHTML = '<i data-lucide="check" class="w-7 h-7"></i>';
+        this.classList.replace('bg-emerald-500', 'bg-blue-500');
+        lucide.createIcons();
+        setTimeout(() => {
+            this.innerHTML = originalContent;
+            this.classList.replace('bg-blue-500', 'bg-emerald-500');
+            lucide.createIcons();
+        }, 1500);
+    };
+
+    document.getElementById('btn-pdf-footer').onclick = () => {
+        gerarPDF();
+    };
+} 
 
 // GERAÇÃO DO EXCEL
 async function generateExcel() {
@@ -277,35 +350,64 @@ function mostraPreviewDaFoto(inputDoArquivo, idDoCampo) {
 
     if (inputDoArquivo.files && inputDoArquivo.files[0]) {
         const leitor = new FileReader();
+        
         leitor.onload = function(evento) {
+            // 1. Mostra a foto na tela na hora
             elementoDaImagem.src = evento.target.result;
             areaDeVisualizacao.classList.remove('hidden');
+            
+            // 2. SALVA A IMAGEM (Isso aqui é o que faz subir pro PDF/Excel)
             respostas[idDoCampo] = evento.target.result; 
+            console.log(`Foto salva no campo: ${idDoCampo}`); // Para teste
         };
+        
         leitor.readAsDataURL(inputDoArquivo.files[0]);
     }
-}
+} 
 
-// SUBMENUS E MANUTENÇÃO
 function openSubmenu(cat) {
     nivelAtual = 'submenu';
     showScreen('items'); 
     document.getElementById('titulo-categoria').innerText = cat.name;
+    
     const lista = document.getElementById('lista-itens');
     lista.innerHTML = ''; 
 
+    // Renderiza Elétrica, Hidráulica, etc.
     cat.subItems.forEach(sub => {
-        const btn = document.createElement('div');
-        btn.className = "flex items-center gap-4 bg-[#1e293b] p-6 rounded-2xl border border-[#334155] mb-4 cursor-pointer active:scale-95 transition-all";
-        btn.onclick = () => openManutencaoEspecifica(sub);
-        btn.innerHTML = `
-            <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: ${sub.color}20">
-                <div class="w-3 h-3 rounded-full" style="background: ${sub.color}"></div>
+        const card = document.createElement('div');
+        card.className = "bg-[#1e293b] border border-[#334155] p-4 rounded-2xl flex items-center gap-4 cursor-pointer mb-3 active:scale-95 transition-all";
+        card.innerHTML = `
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-500/20 text-blue-400">
+                <i data-lucide="wrench" class="w-5 h-5"></i>
             </div>
-            <span class="text-white font-medium">${sub.name}</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-slate-100 text-sm">${sub.name}</h3>
+            </div>
         `;
-        lista.appendChild(btn);
+        card.onclick = () => {
+            // Se for uma subcategoria de manutenção, abre os campos específicos dela
+            openManutencaoEspecifica(sub);
+        };
+        lista.appendChild(card);
     });
+
+    // Rodapé para voltar ao MENU PRINCIPAL
+    const footer = document.createElement('div');
+    footer.className = "flex flex-col items-center gap-2 mt-8 sticky bottom-0 bg-[#0f172a]/95 py-4 border-t border-[#334155] z-50 backdrop-blur-sm";
+    footer.innerHTML = `
+        <button id="btn-voltar-principal" class="flex items-center justify-center w-12 h-12 bg-transparent border-2 border-[#f59e0b] text-[#f59e0b] rounded-xl active:scale-95 transition-all">
+            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+        </button>
+        <span class="text-slate-500 text-[10px] font-bold uppercase">Voltar ao Menu Principal</span>
+    `;
+    lista.appendChild(footer);
+    lucide.createIcons();
+    
+    document.getElementById('btn-voltar-principal').onclick = () => {
+        showScreen('categories');
+        renderCategories();
+    };
 }
 
 function openManutencaoEspecifica(sub) {
@@ -318,4 +420,75 @@ function openManutencaoEspecifica(sub) {
         { id: `${sub.id}_foto_2`, label: 'Foto (Depois)', type: 'file' }
     ];
     openItems({ name: sub.name, items: campos });
+} 
+
+// Exemplo para o PDF (faça igual no Excel)
+function renderBotaoPDF(grid) {
+    const cardPDF = document.createElement('div');
+    cardPDF.className = "bg-red-500/10 border border-red-500/40 p-2 rounded-xl flex items-center gap-3 cursor-pointer mt-2 active:scale-95 transition-all w-full max-w-[250px] mx-auto";
+    cardPDF.innerHTML = `
+        <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center text-white">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+        </div>
+        <span class="font-bold text-red-400 text-xs">Exportar PDF</span>
+    `;
+    cardPDF.onclick = gerarPDF;
+    grid.appendChild(cardPDF);
+}
+
+async function gerarPDF() {
+    if (Object.keys(respostas).length <= 1) {
+        return alert("Preencha os dados primeiro!");
+    }
+
+    // O elemento que vamos transformar em PDF
+    const divParaPdf = document.createElement('div');
+    divParaPdf.innerHTML = `
+        <div style="font-family: Arial; padding: 20px; color: #333;">
+            <h1 style="color: #f59e0b; border-bottom: 2px solid #f59e0b; text-align: center;">RELATÓRIO DE INSPEÇÃO</h1>
+            <p><strong>Responsável:</strong> ${respostas['responsavel']}</p>
+            <p><strong>Data:</strong> ${new Date().toLocaleDateString()}</p>
+            <hr>
+            ${Object.entries(respostas).map(([id, valor]) => {
+                if(!valor || id === 'responsavel') return '';
+                const titulo = id.toUpperCase().replace(/_/g, ' ');
+                if (typeof valor === 'string' && valor.startsWith('data:image')) {
+                    return `<div style="margin-top: 15px;"><strong>${titulo}:</strong><br><img src="${valor}" style="width: 100%; border-radius: 8px; margin-top: 5px;"></div>`;
+                }
+                return `<div style="margin-top: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;"><strong>${titulo}:</strong> ${valor}</div>`;
+            }).join('')}
+        </div>
+    `;
+
+    const opcoes = {
+        margin: 10,
+        filename: 'Relatorio_Inspecao.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    try {
+        // Gera o PDF como um BLOB (arquivo em memória)
+        const pdfBlob = await html2pdf().set(opcoes).from(divParaPdf).output('blob');
+        
+        // Cria o arquivo PDF real
+        const arquivoPdf = new File([pdfBlob], `Relatorio_${respostas['responsavel']}.pdf`, { type: 'application/pdf' });
+
+        // Tenta abrir a bandeja de compartilhar do WhatsApp/Email
+        if (navigator.share && navigator.canShare({ files: [arquivoPdf] })) {
+            await navigator.share({
+                title: 'Relatório de Inspeção',
+                text: 'Segue anexo o relatório em PDF.',
+                files: [arquivoPdf]
+            });
+        } else {
+            // Se o navegador no PC não suportar o "Share", ele baixa o PDF direto
+            alert("No PC o compartilhamento direto é limitado. O PDF será baixado para você anexar manualmente.");
+            html2pdf().set(opcoes).from(divParaPdf).save();
+        }
+    } catch (erro) {
+        console.error(erro);
+        alert("Erro ao processar o PDF. Verifique sua conexão com a internet.");
+    }
 } 
