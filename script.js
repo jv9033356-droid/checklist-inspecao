@@ -201,18 +201,23 @@ function openItems(cat) {
         
         let conteudoInput = "";
 
-        // 1. FOTOS
+       // 1. FOTOS (VERSÃO ATUALIZADA PARA CÂMERA)
         if (pergunta.type === 'file') {
             conteudoInput = `
-                <label class="flex flex-col items-center justify-center gap-2 w-full py-4 bg-[#0f172a] border border-dashed border-[#475569] rounded-lg cursor-pointer hover:border-amber-500 transition-all">
+                <label class="flex flex-col items-center justify-center gap-2 w-full py-4 bg-[#0f172a] border border-dashed border-[#475569] rounded-lg cursor-pointer active:bg-amber-500/10 transition-all">
                     <i data-lucide="camera" class="text-amber-500"></i>
-                    <span class="text-xs text-slate-400">Tirar foto</span>
-                    <input type="file" accept="image/*" class="hidden" onchange="mostraPreviewDaFoto(this, '${pergunta.id}')">
+                    <span class="text-xs text-slate-400">Tirar foto agora</span>
+                    <input type="file" 
+                           accept="image/*" 
+                           capture="environment" 
+                           class="hidden" 
+                           onchange="mostraPreviewDaFoto(this, '${pergunta.id}')">
                 </label>
                 <div id="visualizacao-${pergunta.id}" class="mt-3 hidden p-2 bg-[#0f172a] rounded-lg border border-[#334155]">
-                    <img src="" class="w-full h-auto max-h-40 object-cover rounded-md border-2 border-amber-500">
+                    <p class="text-[10px] text-emerald-500 mb-1">✅ Imagem carregada</p>
+                    <img src="" class="w-full h-auto max-h-60 object-cover rounded-md border-2 border-emerald-500">
                 </div>`;
-        } 
+        }
         // 2. STATUS DO GERADOR (OK/BAIXO/CRÍTICO)
         else if (pergunta.type === 'select_status') {
             conteudoInput = `
