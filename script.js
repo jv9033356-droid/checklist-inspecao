@@ -1,4 +1,4 @@
-// 1. DATA: Onde definimos o que o app vai ter
+// 1. DATA: Definição das Categorias
 const CATEGORIAS = [
     { 
         id: 'agua', 
@@ -10,9 +10,7 @@ const CATEGORIAS = [
             { id: 'foto_hidro', label: 'Foto do Hidrômetro ou Conta', type: 'file' }
         ]
     },
-    // Deixe as outras como estão por enquanto, não vamos mexer nelas.
-
-   { 
+    { 
         id: 'luz', 
         name: '2. Energia', 
         icon: 'zap', 
@@ -22,86 +20,69 @@ const CATEGORIAS = [
             { id: 'foto_luz', label: 'Foto do Medidor ou Conta', type: 'file' }
         ]
     },
-    
-   { 
-    id: 'diesel', 
-    name: '3. Óleo Diesel', 
-    icon: 'fuel', 
-    color: '#ef4444',
-    items: [
-        { id: 'nivel_diesel', label: 'Quantidade de Litros Comprados', type: 'text' },
-        { id: 'valor_diesel', label: 'Valor da compra (R$)', type: 'text' }, 
-        { id: 'nf_diesel', label: 'Digitar NF', type: 'text' }, // NOME ALTERADO  
-        { id: 'foto_diesel', label: 'Foto da NF', type: 'file' }
-    ]
-}, 
-
-   { 
-    id: 'gerador', 
-    name: '4. Gerador', 
-    icon: 'cog', 
-    color: '#64748b',
-    items: [
-        // 1. Horímetro
-        { id: 'horimetro', label: 'Painel de Registro de Horas (h)', type: 'number' },
-        { id: 'foto_horimetro', label: 'Foto do Horímetro', type: 'file' },
-
-        // 2. Boia do Diesel
-        { id: 'nivel_boia_diesel', label: 'Nível da Boia do Diesel', type: 'select_status' },
-        { id: 'foto_boia_diesel', label: 'Foto da Boia/Nível', type: 'file' },
-
-        // 3. Óleo do Motor
-        { id: 'nivel_oleo_motor', label: 'Nível do Óleo do Motor', type: 'select_status' },
-        { id: 'foto_oleo_motor', label: 'Foto da Vareta/Nível Óleo', type: 'file' },
-
-        // 4. Bateria
-        { id: 'voltagem_bateria', label: 'Voltagem da Bateria (V)', type: 'number' },
-        { id: 'foto_voltagem', label: 'Foto do Voltímetro/Multímetro', type: 'file' },
-
-        // 5. Temperatura
-        { id: 'temp_gerador', label: 'Temperatura do Gerador (°C)', type: 'number' },
-        { id: 'foto_temp', label: 'Foto do Termômetro/Painel', type: 'file' }
-    ]
-},
-
     { 
-    id: 'manutencao', 
-    name: '5. Manutenção', 
-    icon: 'tool', 
-    color: '#10b981',
-    isSubmenu: true, // Indica que isso abre outro menu
-    subItems: [
-        { id: 'manut_eletrica', name: '⚡ Manutenção Elétrica', color: '#fbbf24' },
-        { id: 'manut_hidraulica', name: '💧 Manutenção Hidráulica', color: '#3b82f6' },
-        { id: 'manut_geral', name: '🏢 Manutenção Geral', color: '#64748b' },
-        { id: 'manut_preventiva', name: '🛠️ Preventiva', color: '#10b981' },
-        { id: 'manut_corretiva', name: '🚨 Corretiva', color: '#ef4444' }
-    ]
-},
+        id: 'diesel', 
+        name: '3. Óleo Diesel', 
+        icon: 'fuel', 
+        color: '#ef4444',
+        items: [
+            { id: 'nivel_diesel', label: 'Quantidade de Litros Comprados', type: 'text' },
+            { id: 'valor_diesel', label: 'Valor da compra (R$)', type: 'text' }, 
+            { id: 'nf_diesel', label: 'Digitar NF', type: 'text' }, 
+            { id: 'foto_diesel', label: 'Foto da NF', type: 'file' }
+        ]
+    }, 
+    { 
+        id: 'gerador', 
+        name: '4. Gerador', 
+        icon: 'cog', 
+        color: '#64748b',
+        items: [
+            { id: 'horimetro', label: 'Painel de Registro de Horas (h)', type: 'number' },
+            { id: 'foto_horimetro', label: 'Foto do Horímetro', type: 'file' },
+            { id: 'nivel_boia_diesel', label: 'Nível da Boia do Diesel', type: 'select_status' },
+            { id: 'foto_boia_diesel', label: 'Foto da Boia/Nível', type: 'file' },
+            { id: 'nivel_oleo_motor', label: 'Nível do Óleo do Motor', type: 'select_status' },
+            { id: 'foto_oleo_motor', label: 'Foto da Vareta/Nível Óleo', type: 'file' },
+            { id: 'voltagem_bateria', label: 'Voltagem da Bateria (V)', type: 'number' },
+            { id: 'foto_voltagem', label: 'Foto do Voltímetro/Multímetro', type: 'file' },
+            { id: 'temp_gerador', label: 'Temperatura do Gerador (°C)', type: 'number' },
+            { id: 'foto_temp', label: 'Foto do Termômetro/Painel', type: 'file' }
+        ]
+    },
+    { 
+        id: 'manutencao', 
+        name: '5. Manutenção', 
+        icon: 'tool', 
+        color: '#10b981',
+        isSubmenu: true,
+        subItems: [
+            { id: 'manut_eletrica', name: '⚡ Manutenção Elétrica', color: '#fbbf24' },
+            { id: 'manut_hidraulica', name: '💧 Manutenção Hidráulica', color: '#3b82f6' },
+            { id: 'manut_geral', name: '🏢 Manutenção Geral', color: '#64748b' },
+            { id: 'manut_preventiva', name: '🛠️ Preventiva', color: '#10b981' },
+            { id: 'manut_corretiva', name: '🚨 Corretiva', color: '#ef4444' }
+        ]
+    },
 ];  
 
-let respostas = {}; // Objeto para salvar o que o usuário digita
-let nivelAtual = 'menu'; // Ajuda o botão voltar a saber onde você está
+let respostas = {}; 
+let nivelAtual = 'menu'; 
 
-// 2. INICIALIZAÇÃO: Quando a página carrega
+// 2. INICIALIZAÇÃO
 window.onload = () => {
-    lucide.createIcons(); // Carrega os ícones iniciais
-    
-    // Configura o botão Iniciar
+    lucide.createIcons(); 
     document.getElementById('btn-iniciar').onclick = () => {
         const nome = document.getElementById('input-responsible').value;
         if (!nome) return alert("Por favor, preencha o campo Responsável antes de iniciar.");
-        
+        respostas['responsavel'] = nome; // Salva o nome do responsável
         showScreen('categories');
         renderCategories();
     };
 }
 
 document.getElementById('btn-voltar').onclick = () => {
-    // Pegamos o título que está aparecendo no topo da tela agora
     const tituloAtual = document.getElementById('titulo-categoria').innerText;
-    
-    // CORREÇÃO: Lista exata com "Manutenção" antes nos 3 primeiros itens
     const subCategoriasValidas = [
         '⚡ Manutenção Elétrica', 
         '💧 Manutenção Hidráulica', 
@@ -110,23 +91,18 @@ document.getElementById('btn-voltar').onclick = () => {
         '🚨 Corretiva'
     ];
 
-    // Agora o JavaScript vai achar o título certo!
     if (subCategoriasValidas.includes(tituloAtual)) {
-        // Se estiver em uma dessas, volta para a tela 5. Manutenção
         const catManut = CATEGORIAS.find(c => c.id === 'manutencao');
         openSubmenu(catManut);
     } else {
-        // Se for Água, Luz ou a própria tela 5. Manutenção, volta para o menu principal
         showScreen('categories');
         renderCategories();
     }
 }; 
 
-// 3. NAVEGAÇÃO: Troca de telas
+// 3. NAVEGAÇÃO
 function showScreen(screenId) {
-    // Esconde todas as sections de main
     document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-    // Mostra a escolhida
     document.getElementById('screen-' + screenId).classList.remove('hidden');
 }
 
@@ -137,7 +113,6 @@ function renderCategories() {
     CATEGORIAS.forEach(cat => {
         const card = document.createElement('div');
         card.className = "bg-[#1e293b] border border-[#334155] p-4 rounded-2xl flex items-center gap-4 cursor-pointer active:scale-95 transition-all";
-        
         card.innerHTML = `
             <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: ${cat.color}20; color: ${cat.color}">
                 <i data-lucide="${cat.icon}"></i>
@@ -148,27 +123,20 @@ function renderCategories() {
             </div>
         `;
 
-        // AQUI ESTÁ O SEGREDO:
         card.onclick = () => {
             if (cat.subItems && cat.subItems.length > 0) {
-                // Se for manutenção (tem sub-abas), abre o submenu
                 openSubmenu(cat);
             } else {
-                // Se for Água, Luz, etc (tem itens diretos), abre o openItems
                 openItems(cat);
             }
         };
-
         grid.appendChild(card);
     });
 
-    // Botão do Excel (mantém igual embaixo)
     renderBotaoExcel(grid);
- 
     lucide.createIcons();
 }
 
-// Só para organizar, criei essa função pro botão do Excel não bagunçar o loop
 function renderBotaoExcel(grid) {
     const cardExcel = document.createElement('div');
     cardExcel.className = "bg-emerald-500/10 border border-emerald-500/40 p-4 rounded-2xl flex items-center gap-4 cursor-pointer mt-6 active:scale-95 transition-all";
@@ -199,43 +167,31 @@ function openItems(cat) {
         
         let conteudoInput = "";
 
-        // CASO 1: VALOR EM DINHEIRO (Ex: Valor da Compra)
         if (pergunta.id.includes('valor')) {
             conteudoInput = `
-                <input type="text" 
-                       inputmode="decimal"
-                       id="input-${pergunta.id}"
-                       placeholder="R$ 0,00" 
+                <input type="text" inputmode="decimal" id="input-${pergunta.id}" placeholder="R$ 0,00" 
                        class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
                        value="${respostas[pergunta.id] || ''}"
-                       oninput="formatarMoeda(this, '${pergunta.id}')" 
-                       onblur="enviarParaGoogleSheets('${pergunta.id}')">`;
+                       oninput="formatarMoeda(this, '${pergunta.id}')">`;
         }
-        // CASO 2: NÚMEROS (Água, Energia, Gerador) - Teclado Numérico sem travar
         else if (pergunta.type === 'number' || pergunta.type === 'text') {
             const modoTeclado = pergunta.type === 'number' ? 'decimal' : 'text';
             conteudoInput = `
-                <input type="text" 
-                       inputmode="${modoTeclado}"
-                       id="input-${pergunta.id}"
-                       placeholder="Digite aqui..." 
+                <input type="text" inputmode="${modoTeclado}" id="input-${pergunta.id}" placeholder="Digite aqui..." 
                        class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500" 
                        value="${respostas[pergunta.id] || ''}"
-                       oninput="respostas['${pergunta.id}'] = this.value"
-                       onblur="enviarParaGoogleSheets('${pergunta.id}')">`;
+                       oninput="respostas['${pergunta.id}'] = this.value">`;
         }
-        // CASO 3: SELEÇÃO (Status do Gerador)
         else if (pergunta.type === 'select_status') {
             conteudoInput = `
                 <select class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
-                        onchange="respostas['${pergunta.id}'] = this.value; enviarParaGoogleSheets('${pergunta.id}')">
+                        onchange="respostas['${pergunta.id}'] = this.value">
                     <option value="">Selecione...</option>
                     <option value="OK" ${respostas[pergunta.id] === 'OK' ? 'selected' : ''}>✅ OK / Normal</option>
                     <option value="Baixo" ${respostas[pergunta.id] === 'Baixo' ? 'selected' : ''}>⚠️ Baixo / Repor</option>
                     <option value="Crítico" ${respostas[pergunta.id] === 'Crítico' ? 'selected' : ''}>🚨 Crítico</option>
                 </select>`;
         }
-        // CASO 4: FOTO (Com Preview e Envio Automático)
         else if (pergunta.type === 'file') {
             conteudoInput = `
                 <label class="flex flex-col items-center justify-center gap-2 w-full py-4 bg-[#0f172a] border border-dashed border-[#475569] rounded-lg cursor-pointer active:bg-amber-500/10 transition-all">
@@ -255,44 +211,38 @@ function openItems(cat) {
     lucide.createIcons();
 }
 
+// GERAÇÃO DO EXCEL
 async function generateExcel() {
-    if (Object.keys(respostas).length === 0) {
+    if (Object.keys(respostas).length <= 1) { // Verifica se só tem o nome do responsável
         return alert("Nenhum dado registrado. Por favor, realize a inspeção antes de exportar.");
     }
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Relatório');
 
-    // Configura as colunas
     worksheet.columns = [
-        { header: 'ITEM', key: 'item', width: 30 },
-        { header: 'RESPOSTA', key: 'valor', width: 40 },
-        { header: 'FOTO', key: 'foto', width: 20 }
+        { header: 'ITEM', key: 'item', width: 35 },
+        { header: 'RESPOSTA', key: 'valor', width: 45 },
+        { header: 'FOTO', key: 'foto', width: 25 }
     ];
 
     let rowIndex = 2;
-
     for (const [id, valor] of Object.entries(respostas)) {
         if (!valor) continue;
 
-        // Se for FOTO (Base64)
         if (typeof valor === 'string' && valor.startsWith('data:image')) {
             const imageId = workbook.addImage({
                 base64: valor,
                 extension: 'png',
             });
-
             worksheet.getRow(rowIndex).height = 90;
             worksheet.getCell(`A${rowIndex}`).value = id.toUpperCase().replace(/_/g, ' ');
-            worksheet.getCell(`B${rowIndex}`).value = "Ver imagem";
-
+            worksheet.getCell(`B${rowIndex}`).value = "Foto em anexo";
             worksheet.addImage(imageId, {
                 tl: { col: 2, row: rowIndex - 1 },
                 ext: { width: 110, height: 110 }
             });
-        } 
-        // Se for TEXTO ou NÚMERO
-        else {
+        } else {
             worksheet.addRow({ 
                 item: id.toUpperCase().replace(/_/g, ' '), 
                 valor: valor 
@@ -301,7 +251,6 @@ async function generateExcel() {
         rowIndex++;
     }
 
-    // Salva o arquivo
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
@@ -311,7 +260,7 @@ async function generateExcel() {
     a.click();
 }
 
-// FORMATAR MOEDA - Mantendo sua lógica original
+// UTILITÁRIOS: Moeda e Foto
 function formatarMoeda(input, idDoCampo) {
     let valor = input.value.replace(/\D/g, "");
     valor = (valor / 100).toFixed(2) + "";
@@ -322,7 +271,6 @@ function formatarMoeda(input, idDoCampo) {
     respostas[idDoCampo] = input.value; 
 }
 
-// MOSTRAR FOTO - Corrigida para enviar só após carregar
 function mostraPreviewDaFoto(inputDoArquivo, idDoCampo) {
     const areaDeVisualizacao = document.getElementById(`visualizacao-${idDoCampo}`);
     const elementoDaImagem = areaDeVisualizacao.querySelector('img');
@@ -333,35 +281,16 @@ function mostraPreviewDaFoto(inputDoArquivo, idDoCampo) {
             elementoDaImagem.src = evento.target.result;
             areaDeVisualizacao.classList.remove('hidden');
             respostas[idDoCampo] = evento.target.result; 
-            
-            // Envia para a planilha agora que a imagem existe
-            enviarParaGoogleSheets(idDoCampo); 
         };
         leitor.readAsDataURL(inputDoArquivo.files[0]);
     }
 }
 
-// Adicionamos o idDoCampo como parâmetro
-function formatarMoeda(input, idDoCampo) {
-    let valor = input.value;
-
-    valor = valor.replace(/\D/g, "");
-    valor = (valor / 100).toFixed(2) + "";
-    valor = valor.replace(".", ",");
-    valor = valor.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
-    valor = valor.replace(/(\d)(\d{3}),/g, "$1.$2,");
-
-    input.value = "R$ " + valor;
-
-    // A MÁGICA: Agora ele salva no ID certo (seja valor_conta ou valor_luz)
-    respostas[idDoCampo] = valor;
-} 
-
+// SUBMENUS E MANUTENÇÃO
 function openSubmenu(cat) {
     nivelAtual = 'submenu';
-    showScreen('items'); // Usa a mesma tela de itens
+    showScreen('items'); 
     document.getElementById('titulo-categoria').innerText = cat.name;
-    
     const lista = document.getElementById('lista-itens');
     lista.innerHTML = ''; 
 
@@ -369,7 +298,6 @@ function openSubmenu(cat) {
         const btn = document.createElement('div');
         btn.className = "flex items-center gap-4 bg-[#1e293b] p-6 rounded-2xl border border-[#334155] mb-4 cursor-pointer active:scale-95 transition-all";
         btn.onclick = () => openManutencaoEspecifica(sub);
-        
         btn.innerHTML = `
             <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: ${sub.color}20">
                 <div class="w-3 h-3 rounded-full" style="background: ${sub.color}"></div>
@@ -382,46 +310,12 @@ function openSubmenu(cat) {
 
 function openManutencaoEspecifica(sub) {
     nivelAtual = 'itens-manutencao'; 
-    
     document.getElementById('titulo-categoria').innerText = sub.name;
-    const lista = document.getElementById('lista-itens');
-    lista.innerHTML = '';
-
-    // ORDEM ATUALIZADA:
-    // 1º Equipamento/Produto
-    // 2º Descrição do Serviço
     const campos = [
-        { id: `${sub.id}_produto`, label: 'Equipamento / Produto (Ex: Torneira, Disjuntor)', type: 'text' },
-        { id: `${sub.id}_desc`, label: 'Descrição do Serviço (O que foi feito?)', type: 'text' },
-        { id: `${sub.id}_foto_1`, label: 'Foto do Problema (Antes)', type: 'file' },
-        { id: `${sub.id}_foto_2`, label: 'Foto do Serviço (Depois)', type: 'file' }
+        { id: `${sub.id}_produto`, label: 'Equipamento / Produto', type: 'text' },
+        { id: `${sub.id}_desc`, label: 'Descrição do Serviço', type: 'text' },
+        { id: `${sub.id}_foto_1`, label: 'Foto (Antes)', type: 'file' },
+        { id: `${sub.id}_foto_2`, label: 'Foto (Depois)', type: 'file' }
     ];
-
-    // Chama a função para renderizar na tela
     openItems({ name: sub.name, items: campos });
-} 
-
-// FUNÇÃO NOVA: Manda os dados para o Google Sheets em tempo real
-async function enviarParaGoogleSheets(idDoCampo) {
-    const linkDoGoogle = "https://script.google.com/macros/s/AKfycbxbSinMPM2gbqaF1ubrjDXkUNVQDtS8S2WOi78NhR9rOQWv2hikxZ8_kl4ScrnMugXWpA/exec";
-    if (!valorParaEnviar) return;
-
-    // Criamos o pacote de dados completo
-    const dados = {
-        descricao: idDoCampo.toUpperCase().replace(/_/g, ' '), 
-        // Se o valor começar com "data:image", vai para o campo foto. Se não, vai para o campo valor.
-        valor: !String(valorParaEnviar).startsWith('data:image') ? valorParaEnviar : "",
-        foto: String(valorParaEnviar).startsWith('data:image') ? valorParaEnviar : ""
-    };
-
-    try {
-        await fetch(linkDoGoogle, {
-            method: 'POST',
-            mode: 'no-cors', // Importante para o Google não bloquear
-            body: JSON.stringify(dados)
-        });
-        console.log("✅ Enviado: " + idDoCampo);
-    } catch (error) {
-        console.error("❌ Erro no envio:", error);
-    }
 } 
