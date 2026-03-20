@@ -186,9 +186,7 @@ function renderBotaoExcel(grid) {
 }
 
 function openItems(cat) {
-    if (nivelAtual !== 'itens-manutencao') nivelAtual = 'menu'; // <--- Adicione isso
-    showScreen('items');
-    // ... resto do seu código igual ...
+    if (nivelAtual !== 'itens-manutencao') nivelAtual = 'menu';
     showScreen('items'); 
     document.getElementById('titulo-categoria').innerText = cat.name;
     
@@ -201,75 +199,61 @@ function openItems(cat) {
         
         let conteudoInput = "";
 
-       // 1. FOTOS (VERSÃO ATUALIZADA PARA CÂMERA)
-        if (pergunta.type === 'file') {
+        // CASO 1: VALOR EM DINHEIRO (Ex: Valor da Compra)
+        if (pergunta.id.includes('valor')) {
+            conteudoInput = `
+                <input type="text" 
+                       inputmode="decimal"
+                       id="input-${pergunta.id}"
+                       placeholder="R$ 0,00" 
+                       class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
+                       value="${respostas[pergunta.id] || ''}"
+                       oninput="formatarMoeda(this, '${pergunta.id}')" 
+                       onblur="enviarParaGoogleSheets('${pergunta.id}')">`;
+        }
+        // CASO 2: NÚMEROS (Água, Energia, Gerador) - Teclado Numérico sem travar
+        else if (pergunta.type === 'number' || pergunta.type === 'text') {
+            const modoTeclado = pergunta.type === 'number' ? 'decimal' : 'text';
+            conteudoInput = `
+                <input type="text" 
+                       inputmode="${modoTeclado}"
+                       id="input-${pergunta.id}"
+                       placeholder="Digite aqui..." 
+                       class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500" 
+                       value="${respostas[pergunta.id] || ''}"
+                       oninput="respostas['${pergunta.id}'] = this.value"
+                       onblur="enviarParaGoogleSheets('${pergunta.id}')">`;
+        }
+        // CASO 3: SELEÇÃO (Status do Gerador)
+        else if (pergunta.type === 'select_status') {
+            conteudoInput = `
+                <select class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
+                        onchange="respostas['${pergunta.id}'] = this.value; enviarParaGoogleSheets('${pergunta.id}')">
+                    <option value="">Selecione...</option>
+                    <option value="OK" ${respostas[pergunta.id] === 'OK' ? 'selected' : ''}>✅ OK / Normal</option>
+                    <option value="Baixo" ${respostas[pergunta.id] === 'Baixo' ? 'selected' : ''}>⚠️ Baixo / Repor</option>
+                    <option value="Crítico" ${respostas[pergunta.id] === 'Crítico' ? 'selected' : ''}>🚨 Crítico</option>
+                </select>`;
+        }
+        // CASO 4: FOTO (Com Preview e Envio Automático)
+        else if (pergunta.type === 'file') {
             conteudoInput = `
                 <label class="flex flex-col items-center justify-center gap-2 w-full py-4 bg-[#0f172a] border border-dashed border-[#475569] rounded-lg cursor-pointer active:bg-amber-500/10 transition-all">
                     <i data-lucide="camera" class="text-amber-500"></i>
                     <span class="text-xs text-slate-400">Capturar Registro Fotográfico</span>
-                    <input type="file" 
-                           accept="image/*" 
-                           capture="environment" 
-                           class="hidden" 
+                    <input type="file" accept="image/*" capture="environment" class="hidden" 
                            onchange="mostraPreviewDaFoto(this, '${pergunta.id}')">
                 </label>
-                <div id="visualizacao-${pergunta.id}" class="mt-3 hidden p-2 bg-[#0f172a] rounded-lg border border-[#334155]">
-                    <p class="text-[10px] text-emerald-500 mb-1">✅ Imagem carregada</p>
-                    <img src="" class="w-full h-auto max-h-60 object-cover rounded-md border-2 border-emerald-500">
+                <div id="visualizacao-${pergunta.id}" class="mt-3 ${respostas[pergunta.id] ? '' : 'hidden'} p-2 bg-[#0f172a] rounded-lg border border-[#334155]">
+                    <img src="${respostas[pergunta.id] || ''}" class="w-full h-auto max-h-60 object-cover rounded-md border-2 border-emerald-500">
                 </div>`;
-        }
-        // 2. STATUS DO GERADOR (OK/BAIXO/CRÍTICO)
-        else if (pergunta.type === 'select_status') {
-            conteudoInput = `
-                <select class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
-                        onchange="respostas['${pergunta.id}'] = this.value">
-                    <option value="">Selecione...</option>
-                    <option value="OK">✅ OK / Normal</option>
-                    <option value="Baixo">⚠️ Baixo / Repor</option>
-                    <option value="Crítico">🚨 Crítico / Falha</option>
-                </select>`;
-        }
-        // 3. TIPO DE MANUTENÇÃO
-        else if (pergunta.type === 'select_tipo') {
-            conteudoInput = `
-                <select class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
-                        onchange="respostas['${pergunta.id}'] = this.value">
-                    <option value="">Selecione o tipo...</option>
-                    <option value="Preventiva">🛠️ Preventiva (Rotina)</option>
-                    <option value="Corretiva">🚨 Corretiva (Reparo)</option>
-                    <option value="Preditiva">🔍 Preditiva (Análise)</option>
-                </select>`;
-        }
-        // 4. SETOR DA MANUTENÇÃO
-        else if (pergunta.type === 'select_setor') {
-            conteudoInput = `
-                <select class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500"
-                        onchange="respostas['${pergunta.id}'] = this.value">
-                    <option value="">Selecione o setor...</option>
-                    <option value="Elétrica">⚡ Elétrica</option>
-                    <option value="Hidráulica">💧 Hidráulica</option>
-                    <option value="Mecânica">⚙️ Mecânica</option>
-                    <option value="Geral/Civil">🏢 Geral / Civil</option>
-                </select>`;
-        }
-        // 5. TEXTO E DINHEIRO
-        else if (pergunta.type === 'text') {
-            if (pergunta.id.includes('valor')) {
-                conteudoInput = `<input type="text" placeholder="R$ 0,00" class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500" oninput="formatarMoeda(this, '${pergunta.id}')">`;
-            } else {
-                conteudoInput = `<textarea placeholder="Digite os detalhes..." class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500" oninput="respostas['${pergunta.id}'] = this.value"></textarea>`;
-            }
-        }
-        // 6. NÚMEROS
-        else {
-            conteudoInput = `<input type="number" placeholder="Digite o valor..." class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-lg text-sm text-white outline-none focus:border-amber-500" oninput="respostas['${pergunta.id}'] = this.value">`;
         }
 
         div.innerHTML = `<p class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">${pergunta.label}</p>${conteudoInput}`;
         lista.appendChild(div);
     });
     lucide.createIcons();
-} 
+}
 
 async function generateExcel() {
     if (Object.keys(respostas).length === 0) {
@@ -327,32 +311,35 @@ async function generateExcel() {
     a.click();
 }
 
-// Função extra para mostrar a foto assim que o usuário escolher
+// FORMATAR MOEDA - Mantendo sua lógica original
+function formatarMoeda(input, idDoCampo) {
+    let valor = input.value.replace(/\D/g, "");
+    valor = (valor / 100).toFixed(2) + "";
+    valor = valor.replace(".", ",");
+    valor = valor.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+    valor = valor.replace(/(\d)(\d{3}),/g, "$1.$2,");
+    input.value = "R$ " + valor;
+    respostas[idDoCampo] = input.value; 
+}
+
+// MOSTRAR FOTO - Corrigida para enviar só após carregar
 function mostraPreviewDaFoto(inputDoArquivo, idDoCampo) {
     const areaDeVisualizacao = document.getElementById(`visualizacao-${idDoCampo}`);
     const elementoDaImagem = areaDeVisualizacao.querySelector('img');
-    
-    // Verifica se tem algum arquivo selecionado
+
     if (inputDoArquivo.files && inputDoArquivo.files[0]) {
-        // Objeto que "lê" o arquivo
         const leitor = new FileReader();
-        
-        // O que acontece quando o leitor terminar de ler
         leitor.onload = function(evento) {
-            // Coloca o resultado da leitura (a foto) na imagem
             elementoDaImagem.src = evento.target.result;
-            // Mostra a área de visualização (remove o hidden)
             areaDeVisualizacao.classList.remove('hidden');
+            respostas[idDoCampo] = evento.target.result; 
             
-            // Dica de mestre: Vamos guardar esse resultado nas respostas
-            respostas[idDoCampo] = evento.target.result; // Foto salva em formato de texto (base64)
-            console.log("Foto guardada nas respostas para: " + idDoCampo);
-        }
-        
-        // Começa a ler o arquivo de fato
+            // Envia para a planilha agora que a imagem existe
+            enviarParaGoogleSheets(idDoCampo); 
+        };
         leitor.readAsDataURL(inputDoArquivo.files[0]);
     }
-} 
+}
 
 // Adicionamos o idDoCampo como parâmetro
 function formatarMoeda(input, idDoCampo) {
@@ -412,4 +399,29 @@ function openManutencaoEspecifica(sub) {
 
     // Chama a função para renderizar na tela
     openItems({ name: sub.name, items: campos });
+} 
+
+// FUNÇÃO NOVA: Manda os dados para o Google Sheets em tempo real
+async function enviarParaGoogleSheets(idDoCampo) {
+    const linkDoGoogle = "https://script.google.com/macros/s/AKfycbxbSinMPM2gbqaF1ubrjDXkUNVQDtS8S2WOi78NhR9rOQWv2hikxZ8_kl4ScrnMugXWpA/exec";
+    if (!valorParaEnviar) return;
+
+    // Criamos o pacote de dados completo
+    const dados = {
+        descricao: idDoCampo.toUpperCase().replace(/_/g, ' '), 
+        // Se o valor começar com "data:image", vai para o campo foto. Se não, vai para o campo valor.
+        valor: !String(valorParaEnviar).startsWith('data:image') ? valorParaEnviar : "",
+        foto: String(valorParaEnviar).startsWith('data:image') ? valorParaEnviar : ""
+    };
+
+    try {
+        await fetch(linkDoGoogle, {
+            method: 'POST',
+            mode: 'no-cors', // Importante para o Google não bloquear
+            body: JSON.stringify(dados)
+        });
+        console.log("✅ Enviado: " + idDoCampo);
+    } catch (error) {
+        console.error("❌ Erro no envio:", error);
+    }
 } 
