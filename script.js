@@ -90,7 +90,7 @@ window.onload = () => {
     // Configura o botão Iniciar
     document.getElementById('btn-iniciar').onclick = () => {
         const nome = document.getElementById('input-responsible').value;
-        if (!nome) return alert("Mano, digita seu nome!");
+        if (!nome) return alert("Por favor, preencha o campo Responsável antes de iniciar.");
         
         showScreen('categories');
         renderCategories();
@@ -144,7 +144,7 @@ function renderCategories() {
             </div>
             <div class="flex-1">
                 <h3 class="font-bold text-slate-100">${cat.name}</h3>
-                <p class="text-xs text-slate-400">Tocar para inspecionar</p>
+                <p class="text-xs text-slate-400">Clique para iniciar a verificação</p>
             </div>
         `;
 
@@ -206,7 +206,7 @@ function openItems(cat) {
             conteudoInput = `
                 <label class="flex flex-col items-center justify-center gap-2 w-full py-4 bg-[#0f172a] border border-dashed border-[#475569] rounded-lg cursor-pointer active:bg-amber-500/10 transition-all">
                     <i data-lucide="camera" class="text-amber-500"></i>
-                    <span class="text-xs text-slate-400">Tirar foto agora</span>
+                    <span class="text-xs text-slate-400">Capturar Registro Fotográfico</span>
                     <input type="file" 
                            accept="image/*" 
                            capture="environment" 
@@ -273,7 +273,7 @@ function openItems(cat) {
 
 async function generateExcel() {
     if (Object.keys(respostas).length === 0) {
-        return alert("Mano, preencha pelo menos um item antes de exportar!");
+        return alert("Nenhum dado registrado. Por favor, realize a inspeção antes de exportar.");
     }
 
     const workbook = new ExcelJS.Workbook();
