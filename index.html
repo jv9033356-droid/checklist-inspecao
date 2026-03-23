@@ -7,11 +7,14 @@
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="h-full bg-[#0f172a] text-white">
 
-    <div id="app" class="h-full flex flex-col">
+    <div id="app" class="h-full flex flex-col"> 
         <header class="p-4 bg-[#1e293b] border-b border-[#334155] flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
@@ -27,7 +30,11 @@
                 <div class="bg-[#1e293b] p-6 rounded-2xl border border-[#334155]">
                     <h2 class="text-xl font-bold mb-4">Nova Inspeção</h2>
                     <label class="block text-xs text-slate-400 mb-1">Responsável</label>
-                    <input id="input-responsible" type="text" placeholder="Seu nome" class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-xl mb-4 outline-none focus:border-amber-500 transition-colors">
+                    
+                    <input id="input-responsible" type="text" placeholder="Seu nome" 
+                           class="w-full bg-[#0f172a] border border-[#334155] p-3 rounded-xl mb-4 outline-none focus:border-amber-500 transition-colors"
+                           onblur="respostas['responsavel'] = this.value; enviarParaGoogleSheets('responsavel')">
+                    
                     <button id="btn-iniciar" class="w-full bg-amber-500 text-slate-900 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-transform">
                         <i data-lucide="play"></i> Iniciar
                     </button>
@@ -50,4 +57,4 @@
 
     <script src="script.js"></script>
 </body>
-</html>
+</html>  
